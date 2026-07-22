@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18267167145"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'AW-18267167145');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your Fitting | Newman Exclusive Bespoke Tailoring</title>
+<meta name="description" content="Book your trunk show fitting appointment with Newman Exclusive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --gold: #d4af37; --navy: #1a263c; --white: #ffffff; --dark-bg: #050b1a;
+  --panel-bg: #0d1526; --border: rgba(212, 175, 55, 0.25);
+}
+* { margin: 0; padding: 0; box-sizing: border-box !important; }
+body { font-family: 'Roboto', sans-serif; background: var(--dark-bg); color: var(--white); overflow-x: hidden; }
+
+header.main-header {
+  background-color: var(--navy); display: flex; justify-content: space-between; align-items: center;
+  padding: 0 5%; min-height: 90px; width: 100%; position: sticky; top: 0; z-index: 9999;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+.brand-identity { display: flex; align-items: center; gap: 15px; text-decoration: none; flex-shrink: 0; }
+.logo-area img { height: 65px; width: auto; display: block; }
+.brand-name-fancy { font-family: 'Great Vibes', cursive; color: var(--gold); font-size: 32px; white-space: nowrap; }
+nav { display: flex; align-items: center; }
+.nav-links { display: flex; list-style: none; gap: 20px; flex-wrap: nowrap; justify-content: flex-end; padding: 0; margin: 0; }
+.nav-links li a { color: white; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+.nav-links li a:hover { color: var(--gold); }
+@media (max-width: 1024px) {
+  header.main-header { flex-direction: column; padding: 15px 5%; min-height: auto; }
+  .nav-links { flex-wrap: wrap; justify-content: center; gap: 10px 15px; padding: 5px 0; }
+}
+
+.wrap { max-width: 680px; margin: 0 auto; padding: 50px 5% 80px; }
+.page-header { text-align: center; margin-bottom: 36px; }
+.page-header span { color: var(--gold); text-transform: uppercase; letter-spacing: 5px; font-size: 13px; }
+.page-header h1 { font-family: 'Playfair Display'; font-size: clamp(26px, 5vw, 40px); margin: 12px 0 4px; }
+.page-header p { opacity: 0.6; font-size: 14px; }
+.divider { width: 50px; height: 1px; background: var(--gold); margin: 20px auto 0; }
+
+.panel {
+  background: var(--panel-bg); border: 1px solid var(--border); border-radius: 4px;
+  padding: 28px; margin-bottom: 22px;
+}
+.panel h2 {
+  font-family: 'Playfair Display'; font-size: 15px; text-transform: uppercase; letter-spacing: 2px;
+  color: var(--gold); margin: 0 0 18px; border-bottom: 1px solid var(--border); padding-bottom: 12px;
+}
+label { display: block; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin: 14px 0 8px; opacity: 0.8; }
+input[type=text] {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--border); border-radius: 3px;
+  font-size: 15px; background: rgba(255,255,255,0.03); color: var(--white); font-family: inherit;
+}
+select { padding: 12px 8px; border: 1px solid var(--border); border-radius: 3px; background: rgba(255,255,255,0.03); color: var(--white); font-family: inherit; }
+
+.date-grid, .slot-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.date-chip, .slot-chip {
+  padding: 12px 16px; border: 1px solid var(--border); border-radius: 3px; cursor: pointer;
+  font-size: 13px; text-align: center;
+}
+.date-chip.selected, .slot-chip.selected { border-color: var(--gold); background: rgba(212,175,55,0.12); color: var(--gold); }
+.slot-chip.unavailable { opacity: 0.25; cursor: not-allowed; text-decoration: line-through; }
+
+button.btn-gold {
+  width: 100%; padding: 15px; background: transparent; color: var(--gold); border: 1px solid var(--gold);
+  border-radius: 3px; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; font-weight: 700;
+  cursor: pointer; margin-top: 20px; transition: 0.4s; font-family: inherit;
+}
+button.btn-gold:hover { background: var(--gold); color: var(--navy); }
+button.btn-gold:disabled { opacity: 0.4; cursor: not-allowed; }
+button.btn-outline {
+  width: 100%; padding: 12px; background: transparent; color: rgba(255,255,255,0.6); border: 1px solid var(--border);
+  border-radius: 3px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 10px; font-family: inherit;
+}
+
+#qrContainer { display: inline-block; margin: 14px 0; padding: 16px; background: #fff; border-radius: 4px; }
+#qrAmount { font-family: 'Playfair Display'; font-size: 26px; color: var(--gold); text-align: center; margin: 10px 0; }
+.hint { font-size: 12px; opacity: 0.6; text-align: center; margin-top: 10px; }
+.file-input { border: 1px dashed var(--border); border-radius: 4px; padding: 24px; text-align: center; cursor: pointer; font-size: 13px; opacity: 0.7; }
+#slipPreview { max-width: 100%; margin-top: 14px; border-radius: 4px; }
+
+.status-msg { text-align: center; font-size: 14px; padding: 18px; border-radius: 4px; margin-top: 10px; }
+.status-msg.success { background: rgba(60, 140, 90, 0.15); color: #7fd99a; border: 1px solid rgba(60,140,90,0.3); }
+.status-msg.error { background: rgba(163, 53, 43, 0.15); color: #ff9a8f; border: 1px solid rgba(163,53,43,0.3); }
+.hidden { display: none; }
+.summary-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+.summary-row span:first-child { opacity: 0.6; }
+</style>
+</head>
+<body>
+<header class="main-header">
+<a href="index.html" class="brand-identity">
+<div class="logo-area"><img src="images/Final_Logos_(1).png" alt="Logo"></div>
+<span class="brand-name-fancy">Newman Exclusive</span>
+</a>
+<nav>
+<ul class="nav-links">
+<li><a href="index.html">Home</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="services.html">Services</a></li>
+<li><a href="contact.html">Contact</a></li>
+</ul>
+</nav>
+</header>
+
+<main class="wrap">
+  <div class="page-header">
+    <span>Trunk Show</span>
+    <h1 id="showTitle">Loading…</h1>
+    <p id="showSubtitle"></p>
+    <div class="divider"></div>
+  </div>
+
+  <div id="loadError" class="status-msg error hidden"></div>
+
+  <!-- STEP 1: PICK DATE -->
+  <div class="panel hidden" id="stepDate">
+    <h2>1. Select a Date</h2>
+    <div class="date-grid" id="dateGrid"></div>
+  </div>
+
+  <!-- STEP 2: PICK TIME -->
+  <div class="panel hidden" id="stepTime">
+    <h2>2. Select a Time</h2>
+    <div class="slot-grid" id="slotGrid"></div>
+    <button class="btn-outline" id="btnBackToDate">Back</button>
+  </div>
+
+  <!-- STEP 3: YOUR DETAILS -->
+  <div class="panel hidden" id="stepDetails">
+    <h2>3. Your Details</h2>
+    <label for="custName">Your Name <span style="color:var(--gold);">*</span></label>
+    <input type="text" id="custName" required>
+    <label for="custContact">Phone or LINE ID <span style="color:var(--gold);">*</span></label>
+    <div style="display:flex; gap:8px;">
+      <select id="countryCode">
+        <option value="+66" selected>🇹🇭 +66</option>
+        <option value="+1">🇺🇸 +1</option>
+        <option value="+44">🇬🇧 +44</option>
+        <option value="+65">🇸🇬 +65</option>
+        <option value="+60">🇲🇾 +60</option>
+        <option value="+81">🇯🇵 +81</option>
+        <option value="+82">🇰🇷 +82</option>
+        <option value="+61">🇦🇺 +61</option>
+        <option value="+971">🇦🇪 +971</option>
+        <option value="other">Other</option>
+      </select>
+      <input type="text" id="custContact" placeholder="Number or LINE ID" required style="flex:1;">
+    </div>
+    <button class="btn-gold" id="btnConfirmDetails">Continue</button>
+    <button class="btn-outline" id="btnBackToTime">Back</button>
+  </div>
+
+  <!-- STEP 4: DEPOSIT (conditional) -->
+  <div class="panel hidden" id="stepDeposit">
+    <h2>4. Secure Your Slot — Deposit Required</h2>
+    <div id="qrAmount"></div>
+    <div style="text-align:center;"><div id="qrContainer"></div></div>
+    <p class="hint">Scan with your banking app to pay the deposit.</p>
+    <button class="btn-gold" id="btnPaidDeposit">I've Paid — Upload Confirmation</button>
+    <div class="file-input hidden" id="fileDropArea" style="margin-top:16px;">
+      Tap to choose a screenshot of your transfer confirmation
+      <input type="file" id="slipFile" accept="image/*" capture="environment" class="hidden">
+    </div>
+    <img id="slipPreview" class="hidden">
+    <button class="btn-gold hidden" id="btnSubmitDeposit">Confirm Booking</button>
+  </div>
+
+  <!-- STEP 5: CONFIRM (no deposit) -->
+  <div class="panel hidden" id="stepConfirmNoDeposit">
+    <h2>4. Confirm Your Booking</h2>
+    <div id="summaryBox"></div>
+    <button class="btn-gold" id="btnFinalConfirm">Confirm Booking</button>
+  </div>
+
+  <div id="resultMsg"></div>
+</main>
+
+<footer style="text-align: center; padding: 60px 0; border-top: 1px solid rgba(212,175,55,0.1);">
+  <p style="color: var(--gold); letter-spacing: 3px; font-size: 11px; text-transform: uppercase;">NEWMAN EXCLUSIVE &copy; 2026</p>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/promptpay.js"></script>
+<script src="js/ics.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const showId = params.get('show');
+
+  let trunkShow = null;
+  let takenSlotSet = new Set();   // "YYYY-MM-DD|HH:MM"
+  let blockedSlotSet = new Set();
+  let selectedDate = null;
+  let selectedTime = null;
+  let selectedFile = null;
+
+  function showLoadError(msg) {
+    const el = document.getElementById('loadError');
+    el.textContent = msg;
+    el.classList.remove('hidden');
+  }
+
+  async function init() {
+    if (!showId) {
+      document.getElementById('showTitle').textContent = 'No trunk show specified';
+      showLoadError('This link is missing the trunk show ID. Please use the exact link your tailor sent you.');
+      return;
+    }
+
+    const { data: show, error: showErr } = await supabaseClient
+      .from('trunk_shows').select('*').eq('id', showId).single();
+    if (showErr || !show) {
+      document.getElementById('showTitle').textContent = 'Trunk show not found';
+      showLoadError('This booking link is invalid or the trunk show has been removed.');
+      return;
+    }
+    if (show.status !== 'active') {
+      document.getElementById('showTitle').textContent = show.name;
+      showLoadError('This trunk show is no longer accepting bookings.');
+      return;
+    }
+    trunkShow = show;
+    document.getElementById('showTitle').textContent = show.name;
+    document.getElementById('showSubtitle').textContent = `${show.city}${show.venue_address ? ' — ' + show.venue_address : ''}`;
+
+    const { data: taken } = await supabaseClient
+      .from('taken_slots').select('*').eq('trunk_show_id', showId);
+    (taken || []).forEach(t => takenSlotSet.add(`${t.slot_date}|${t.slot_time.slice(0,5)}`));
+
+    const { data: blocked } = await supabaseClient
+      .from('blocked_slots').select('*').eq('trunk_show_id', showId);
+    (blocked || []).forEach(b => blockedSlotSet.add(`${b.slot_date}|${b.slot_time.slice(0,5)}`));
+
+    renderDates();
+    document.getElementById('stepDate').classList.remove('hidden');
+  }
+
+  function renderDates() {
+    const grid = document.getElementById('dateGrid');
+    grid.innerHTML = '';
+    let d = new Date(trunkShow.start_date + 'T00:00:00');
+    const end = new Date(trunkShow.end_date + 'T00:00:00');
+    while (d <= end) {
+      const dateStr = d.toISOString().split('T')[0];
+      const chip = document.createElement('div');
+      chip.className = 'date-chip';
+      chip.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+      chip.addEventListener('click', () => selectDate(dateStr, chip));
+      grid.appendChild(chip);
+      d.setDate(d.getDate() + 1);
+    }
+  }
+
+  function selectDate(dateStr, chipEl) {
+    selectedDate = dateStr;
+    document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('selected'));
+    chipEl.classList.add('selected');
+    renderSlots(dateStr);
+    document.getElementById('stepTime').classList.remove('hidden');
+    document.getElementById('stepDetails').classList.add('hidden');
+    document.getElementById('stepDeposit').classList.add('hidden');
+    document.getElementById('stepConfirmNoDeposit').classList.add('hidden');
+  }
+
+  function renderSlots(dateStr) {
+    const grid = document.getElementById('slotGrid');
+    grid.innerHTML = '';
+    const [startH, startM] = trunkShow.daily_start_time.split(':').map(Number);
+    const [endH, endM] = trunkShow.daily_end_time.split(':').map(Number);
+    const duration = trunkShow.slot_duration_minutes;
+
+    let cursor = startH * 60 + startM;
+    const endMinutes = endH * 60 + endM;
+
+    while (cursor + duration <= endMinutes) {
+      const hh = String(Math.floor(cursor / 60)).padStart(2, '0');
+      const mm = String(cursor % 60).padStart(2, '0');
+      const timeStr = `${hh}:${mm}`;
+      const key = `${dateStr}|${timeStr}`;
+      const isTaken = takenSlotSet.has(key) || blockedSlotSet.has(key);
+
+      const chip = document.createElement('div');
+      chip.className = 'slot-chip' + (isTaken ? ' unavailable' : '');
+      chip.textContent = timeStr;
+      if (!isTaken) {
+        chip.addEventListener('click', () => selectTime(timeStr, chip));
+      }
+      grid.appendChild(chip);
+      cursor += duration;
+    }
+  }
+
+  function selectTime(timeStr, chipEl) {
+    selectedTime = timeStr;
+    document.querySelectorAll('.slot-chip').forEach(c => c.classList.remove('selected'));
+    chipEl.classList.add('selected');
+    document.getElementById('stepDetails').classList.remove('hidden');
+  }
+
+  document.getElementById('btnBackToDate').addEventListener('click', () => {
+    document.getElementById('stepTime').classList.add('hidden');
+  });
+  document.getElementById('btnBackToTime').addEventListener('click', () => {
+    document.getElementById('stepDetails').classList.add('hidden');
+  });
+
+  document.getElementById('btnConfirmDetails').addEventListener('click', () => {
+    const name = document.getElementById('custName').value.trim();
+    const contact = document.getElementById('custContact').value.trim();
+    if (!name) return alert('Please enter your name.');
+    if (!contact) return alert('Please enter a phone number or LINE ID.');
+
+    if (trunkShow.deposit_required) {
+      document.getElementById('qrAmount').textContent = `Deposit: ฿${Number(trunkShow.deposit_amount).toLocaleString(undefined, {minimumFractionDigits:2})}`;
+      renderPromptPayQR(document.getElementById('qrContainer'), PROMPTPAY_ID, trunkShow.deposit_amount);
+      document.getElementById('stepDeposit').classList.remove('hidden');
+    } else {
+      renderNoDepositSummary();
+      document.getElementById('stepConfirmNoDeposit').classList.remove('hidden');
+    }
+  });
+
+  function getBookingSummaryHTML() {
+    const name = document.getElementById('custName').value.trim();
+    const dateLabel = new Date(selectedDate + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+    return `
+      <div class="summary-row"><span>Name</span><span>${name}</span></div>
+      <div class="summary-row"><span>Date</span><span>${dateLabel}</span></div>
+      <div class="summary-row"><span>Time</span><span>${selectedTime}</span></div>
+      <div class="summary-row"><span>Location</span><span>${trunkShow.city}</span></div>
+    `;
+  }
+
+  function renderNoDepositSummary() {
+    document.getElementById('summaryBox').innerHTML = getBookingSummaryHTML();
+  }
+
+  document.getElementById('btnPaidDeposit').addEventListener('click', () => {
+    document.getElementById('fileDropArea').classList.remove('hidden');
+    document.getElementById('btnSubmitDeposit').classList.remove('hidden');
+    document.getElementById('btnPaidDeposit').classList.add('hidden');
+  });
+
+  const fileDropArea = document.getElementById('fileDropArea');
+  const slipFileInput = document.getElementById('slipFile');
+  fileDropArea.addEventListener('click', () => slipFileInput.click());
+  slipFileInput.addEventListener('change', (e) => {
+    selectedFile = e.target.files[0];
+    if (selectedFile) {
+      const preview = document.getElementById('slipPreview');
+      preview.src = URL.createObjectURL(selectedFile);
+      preview.classList.remove('hidden');
+    }
+  });
+
+  async function createBooking(depositPaid, slipPath) {
+    const name = document.getElementById('custName').value.trim();
+    const countryCode = document.getElementById('countryCode').value;
+    const contactRaw = document.getElementById('custContact').value.trim();
+    const contact = (countryCode !== 'other') ? `${countryCode} ${contactRaw}` : contactRaw;
+
+    const { error } = await supabaseClient.from('bookings').insert({
+      trunk_show_id: showId,
+      customer_name: name,
+      customer_contact: contact,
+      slot_date: selectedDate,
+      slot_time: selectedTime,
+      deposit_required: trunkShow.deposit_required,
+      deposit_paid: depositPaid,
+      deposit_slip_path: slipPath || null,
+      status: 'confirmed'
+    });
+
+    if (error) {
+      if (error.code === '23505') {
+        throw new Error('Sorry, that slot was just booked by someone else. Please choose another time.');
+      }
+      throw error;
+    }
+
+    // Generate and download the calendar invite
+    const startDateTime = `${selectedDate}T${selectedTime}:00`;
+    const ics = generateICS({
+      title: `Fitting Appointment — Newman Exclusive (${trunkShow.name})`,
+      description: `Trunk show fitting appointment for ${name}.`,
+      location: `${trunkShow.venue_address || ''}, ${trunkShow.city}`,
+      startDateTime,
+      durationMinutes: trunkShow.slot_duration_minutes
+    });
+    downloadICS(ics, 'newman-exclusive-fitting.ics');
+
+    document.querySelectorAll('.panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById('resultMsg').innerHTML =
+      '<div class="status-msg success">Booking confirmed! A calendar invite has downloaded — open it to add the appointment to your calendar.</div>';
+  }
+
+  document.getElementById('btnFinalConfirm').addEventListener('click', async (e) => {
+    const btn = e.target;
+    btn.disabled = true;
+    btn.textContent = 'Confirming...';
+    try {
+      await createBooking(false, null);
+    } catch (err) {
+      console.error(err);
+      document.getElementById('resultMsg').innerHTML =
+        `<div class="status-msg error">${err.message || 'Something went wrong. Please try again.'}</div>`;
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
+    }
+  });
+
+  document.getElementById('btnSubmitDeposit').addEventListener('click', async (e) => {
+    const btn = e.target;
+    if (!selectedFile) return alert('Please upload your payment slip first.');
+    btn.disabled = true;
+    btn.textContent = 'Confirming...';
+    try {
+      const fileExt = selectedFile.name.split('.').pop();
+      const filePath = `${Date.now()}_${Math.random().toString(36).slice(2)}.${fileExt}`;
+      const { error: uploadError } = await supabaseClient.storage.from('slips').upload(filePath, selectedFile);
+      if (uploadError) throw uploadError;
+      await createBooking(true, filePath);
+    } catch (err) {
+      console.error(err);
+      document.getElementById('resultMsg').innerHTML =
+        `<div class="status-msg error">${err.message || 'Something went wrong. Please try again.'}</div>`;
+      btn.disabled = false;
+      btn.textContent = 'Confirm Booking';
+    }
+  });
+
+  init();
+</script>
+</body>
+</html>

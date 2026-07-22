@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trunk Show Admin — Newman Exclusive</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root { --navy: #10233d; --gold: #b8925a; --cream: #faf7f2; --gray: #6b6b6b; --border: #e3ddd2; }
+  * { box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: var(--cream); color: var(--navy); margin: 0; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+  header { text-align: center; margin-bottom: 24px; }
+  header h1 { font-size: 20px; letter-spacing: 1px; margin: 0; }
+  .card { background: #fff; border: 1px solid var(--border); border-radius: 6px; padding: 22px; margin-bottom: 18px; }
+  label { display: block; font-size: 13px; margin: 12px 0 6px; }
+  input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; font-family: inherit; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  button { padding: 10px 16px; background: var(--navy); color: #fff; border: none; border-radius: 4px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  button.small { padding: 6px 10px; font-size: 12px; }
+  button.secondary { background: transparent; color: var(--navy); border: 1px solid var(--navy); }
+  button.danger { background: #a3352b; }
+  .hidden { display: none; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 9px; border-bottom: 1px solid var(--border); }
+  th { color: var(--gold); text-transform: uppercase; font-size: 11px; }
+  .show-list-item { padding: 14px; border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .show-list-item:hover { border-color: var(--gold); }
+  .badge { padding: 3px 8px; border-radius: 10px; font-size: 11px; }
+  .badge.active { background: #eaf6ec; color: #22633a; }
+  .badge.closed { background: #eee; color: #888; }
+  .link-box { display: flex; gap: 8px; align-items: center; background: #f7f4ee; padding: 10px; border-radius: 4px; font-size: 12px; word-break: break-all; }
+  #topBar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .checkbox-row input { width: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>NEWMAN EXCLUSIVE — Trunk Shows</h1></header>
+
+  <!-- LOGIN -->
+  <div class="card" id="loginCard">
+    <label for="loginEmail">Staff Email</label>
+    <input type="text" id="loginEmail">
+    <label for="loginPassword">Password</label>
+    <input type="password" id="loginPassword">
+    <button id="btnLogin" style="margin-top:16px;width:100%;">Log In</button>
+    <p id="loginError" style="color:#a3352b;font-size:12px;"></p>
+  </div>
+
+  <!-- DASHBOARD: LIST -->
+  <div class="hidden" id="listView">
+    <div id="topBar">
+      <button id="btnNewShow">+ New Trunk Show</button>
+      <button class="secondary" id="btnLogout">Log Out</button>
+    </div>
+    <div class="card" id="showListCard">
+      <h3 style="margin-bottom:14px;">Your Trunk Shows</h3>
+      <div id="showList"></div>
+    </div>
+  </div>
+
+  <!-- NEW SHOW FORM -->
+  <div class="hidden" id="newShowView">
+    <div class="card">
+      <h3 style="margin-bottom:14px;">Create Trunk Show</h3>
+      <label>Name</label>
+      <input type="text" id="newName" placeholder="e.g. Bangkok Trunk Show — August 2026">
+      <div class="row2">
+        <div><label>City</label><input type="text" id="newCity" placeholder="e.g. Singapore"></div>
+        <div><label>Venue Address (optional)</label><input type="text" id="newVenue"></div>
+      </div>
+      <div class="row2">
+        <div><label>Start Date</label><input type="date" id="newStartDate"></div>
+        <div><label>End Date</label><input type="date" id="newEndDate"></div>
+      </div>
+      <div class="row3">
+        <div><label>Daily Start Time</label><input type="time" id="newDailyStart" value="10:00"></div>
+        <div><label>Daily End Time</label><input type="time" id="newDailyEnd" value="18:00"></div>
+        <div><label>Slot Length (min)</label><input type="number" id="newSlotLength" value="30" min="10" step="5"></div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="newDepositRequired">
+        <label style="margin:0;">Require a deposit to book</label>
+      </div>
+      <div id="depositAmountRow" class="hidden">
+        <label>Deposit Amount (THB)</label>
+        <input type="number" id="newDepositAmount" min="1" step="0.01">
+      </div>
+      <button id="btnCreateShow" style="margin-top:20px;width:100%;">Create Trunk Show</button>
+      <button class="secondary" id="btnCancelNew" style="width:100%;margin-top:8px;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- SHOW DETAIL -->
+  <div class="hidden" id="detailView">
+    <button class="secondary" id="btnBackToList" style="margin-bottom:14px;">← All Trunk Shows</button>
+
+    <div class="card">
+      <h3 id="detailTitle"></h3>
+      <p id="detailMeta" style="color:var(--gray);font-size:13px;margin-top:6px;"></p>
+      <label style="margin-top:16px;">Booking link to send your customers</label>
+      <div class="link-box">
+        <span id="bookingLinkText"></span>
+        <button class="small" id="btnCopyLink">Copy</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:14px;">Block Off a Slot</h3>
+      <p style="font-size:12px;color:var(--gray);margin-bottom:10px;">Use this for appointments already confirmed via WhatsApp/phone, so customers booking online don't see it as free.</p>
+      <div class="row3">
+        <div><label>Date</label><input type="date" id="blockDate"></div>
+        <div><label>Time</label><input type="time" id="blockTime"></div>
+        <div><label>Reason (optional)</label><input type="text" id="blockReason" placeholder="e.g. VIP client"></div>
+      </div>
+      <button id="btnAddBlock" style="margin-top:14px;">Block This Slot</button>
+
+      <table style="margin-top:18px;">
+        <thead><tr><th>Date</th><th>Time</th><th>Reason</th><th></th></tr></thead>
+        <tbody id="blockedTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-bottom:14px;">Bookings</h3>
+      <table>
+        <thead><tr><th>Date</th><th>Time</th><th>Customer</th><th>Contact</th><th>Deposit</th></tr></thead>
+        <tbody id="bookingsTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script>
+  let currentShowId = null;
+  let currentShow = null;
+
+  async function checkSession() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      document.getElementById('loginCard').classList.add('hidden');
+      showListView();
+    }
+  }
+
+  document.getElementById('btnLogin').addEventListener('click', async () => {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) { document.getElementById('loginError').textContent = error.message; return; }
+    document.getElementById('loginCard').classList.add('hidden');
+    showListView();
+  });
+
+  document.getElementById('btnLogout').addEventListener('click', async () => {
+    await supabaseClient.auth.signOut();
+    location.reload();
+  });
+
+  function hideAllViews() {
+    ['listView','newShowView','detailView'].forEach(id => document.getElementById(id).classList.add('hidden'));
+  }
+
+  async function showListView() {
+    hideAllViews();
+    document.getElementById('listView').classList.remove('hidden');
+    const { data, error } = await supabaseClient.from('trunk_shows').select('*').order('created_at', { ascending: false });
+    const listEl = document.getElementById('showList');
+    listEl.innerHTML = '';
+    if (error) { listEl.innerHTML = `<p>Error: ${error.message}</p>`; return; }
+    if (!data.length) { listEl.innerHTML = '<p style="color:var(--gray);">No trunk shows yet — create one to get started.</p>'; return; }
+    data.forEach(show => {
+      const div = document.createElement('div');
+      div.className = 'show-list-item';
+      div.innerHTML = `
+        <div>
+          <strong>${show.name}</strong><br>
+          <span style="color:var(--gray);font-size:12px;">${show.city} · ${show.start_date} to ${show.end_date}</span>
+        </div>
+        <span class="badge ${show.status}">${show.status}</span>
+      `;
+      div.addEventListener('click', () => showDetailView(show.id));
+      listEl.appendChild(div);
+    });
+  }
+
+  document.getElementById('btnNewShow').addEventListener('click', () => {
+    hideAllViews();
+    document.getElementById('newShowView').classList.remove('hidden');
+  });
+  document.getElementById('btnCancelNew').addEventListener('click', showListView);
+  document.getElementById('btnBackToList').addEventListener('click', showListView);
+
+  document.getElementById('newDepositRequired').addEventListener('change', (e) => {
+    document.getElementById('depositAmountRow').classList.toggle('hidden', !e.target.checked);
+  });
+
+  document.getElementById('btnCreateShow').addEventListener('click', async () => {
+    const name = document.getElementById('newName').value.trim();
+    const city = document.getElementById('newCity').value.trim();
+    const venue = document.getElementById('newVenue').value.trim();
+    const startDate = document.getElementById('newStartDate').value;
+    const endDate = document.getElementById('newEndDate').value;
+    const dailyStart = document.getElementById('newDailyStart').value;
+    const dailyEnd = document.getElementById('newDailyEnd').value;
+    const slotLength = parseInt(document.getElementById('newSlotLength').value);
+    const depositRequired = document.getElementById('newDepositRequired').checked;
+    const depositAmount = depositRequired ? parseFloat(document.getElementById('newDepositAmount').value) : null;
+
+    if (!name || !city || !startDate || !endDate) return alert('Please fill in name, city, and dates.');
+    if (depositRequired && (!depositAmount || depositAmount <= 0)) return alert('Please enter a valid deposit amount.');
+
+    const { error } = await supabaseClient.from('trunk_shows').insert({
+      name, city, venue_address: venue || null,
+      start_date: startDate, end_date: endDate,
+      daily_start_time: dailyStart, daily_end_time: dailyEnd,
+      slot_duration_minutes: slotLength,
+      deposit_required: depositRequired,
+      deposit_amount: depositAmount,
+      status: 'active'
+    });
+    if (error) return alert('Error creating trunk show: ' + error.message);
+    showListView();
+  });
+
+  async function showDetailView(showId) {
+    hideAllViews();
+    document.getElementById('detailView').classList.remove('hidden');
+    currentShowId = showId;
+
+    const { data: show, error } = await supabaseClient.from('trunk_shows').select('*').eq('id', showId).single();
+    if (error || !show) { alert('Could not load trunk show.'); showListView(); return; }
+    currentShow = show;
+
+    document.getElementById('detailTitle').textContent = show.name;
+    document.getElementById('detailMeta').textContent =
+      `${show.city} · ${show.start_date} to ${show.end_date} · ${show.daily_start_time.slice(0,5)}–${show.daily_end_time.slice(0,5)} · ${show.slot_duration_minutes} min slots` +
+      (show.deposit_required ? ` · Deposit: ฿${Number(show.deposit_amount).toLocaleString()}` : ' · No deposit required');
+
+    const bookingUrl = `${window.location.origin}${window.location.pathname.replace('trunkshow-admin.html','trunkshow-booking.html')}?show=${showId}`;
+    document.getElementById('bookingLinkText').textContent = bookingUrl;
+    document.getElementById('btnCopyLink').onclick = () => {
+      navigator.clipboard.writeText(bookingUrl);
+      document.getElementById('btnCopyLink').textContent = 'Copied!';
+      setTimeout(() => { document.getElementById('btnCopyLink').textContent = 'Copy'; }, 1500);
+    };
+
+    loadBlockedSlots();
+    loadBookings();
+  }
+
+  document.getElementById('btnAddBlock').addEventListener('click', async () => {
+    const date = document.getElementById('blockDate').value;
+    const time = document.getElementById('blockTime').value;
+    const reason = document.getElementById('blockReason').value.trim();
+    if (!date || !time) return alert('Please pick a date and time.');
+
+    const { error } = await supabaseClient.from('blocked_slots').insert({
+      trunk_show_id: currentShowId, slot_date: date, slot_time: time, reason: reason || null
+    });
+    if (error) return alert('Error: ' + error.message);
+    document.getElementById('blockDate').value = '';
+    document.getElementById('blockTime').value = '';
+    document.getElementById('blockReason').value = '';
+    loadBlockedSlots();
+  });
+
+  async function loadBlockedSlots() {
+    const { data } = await supabaseClient.from('blocked_slots').select('*').eq('trunk_show_id', currentShowId).order('slot_date');
+    const tbody = document.getElementById('blockedTableBody');
+    tbody.innerHTML = '';
+    (data || []).forEach(b => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${b.slot_date}</td><td>${b.slot_time.slice(0,5)}</td><td>${b.reason || '—'}</td>
+        <td><button class="small danger" data-id="${b.id}">Remove</button></td>
+      `;
+      tr.querySelector('button').addEventListener('click', async () => {
+        await supabaseClient.from('blocked_slots').delete().eq('id', b.id);
+        loadBlockedSlots();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function loadBookings() {
+    const { data } = await supabaseClient.from('bookings').select('*').eq('trunk_show_id', currentShowId).order('slot_date');
+    const tbody = document.getElementById('bookingsTableBody');
+    tbody.innerHTML = '';
+    (data || []).forEach(b => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${b.slot_date}</td><td>${b.slot_time.slice(0,5)}</td><td>${b.customer_name}</td>
+        <td>${b.customer_contact}</td>
+        <td>${b.deposit_required ? (b.deposit_paid ? '✅ Paid' : '⏳ Pending') : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  checkSession();
+</script>
+</body>
+</html>
